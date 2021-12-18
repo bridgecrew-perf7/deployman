@@ -1,5 +1,6 @@
 import { Context } from 'koa';
 import Router from '@koa/router';
+import webhook from './webhook';
 
 const router = new Router();
 
@@ -25,4 +26,4 @@ router.get('/healthz', async (ctx: Context) => {
 });
 /** k8s 检查 */
 
-export default [router];
+export default [router, webhook];

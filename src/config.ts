@@ -1,5 +1,5 @@
 import dotenv from 'dotenv';
-import { cleanEnv, str, num, bool } from 'envalid';
+import { cleanEnv, str, num, bool, url } from 'envalid';
 
 const result = dotenv.config();
 if (result.error) {
@@ -15,6 +15,10 @@ export default cleanEnv(
     MONGO_ENABLE: bool({ default: false, devDefault: false }),
     MONGO_URL: str({
       devDefault: 'mongodb://localhost:27017/example',
+    }),
+    RPC_URL: url({
+      default: 'http://localhost:3456/rpc',
+      devDefault: 'http://localhost:3456/rpc',
     }),
   },
 );
