@@ -1,0 +1,56 @@
+{
+  "name": "your-ts-project",
+  "version": "0.0.0",
+  "description": "一个 typescript 的样板房",
+  "files": [
+    "dist"
+  ],
+  "main": "./dist/index.js",
+  "module": "./dist/index.mjs",
+  "exports": {
+    "require": "./dist/index.js",
+    "import": "./dist/index.mjs"
+  },
+  "types": "./dist/index.d.ts",
+  "scripts": {
+    "start": "npx pnpm run watch",
+    "watch": "NODE_ENV=development pnpm run build-fast -- --watch --onSuccess \"node dist/index.js\"",
+    "build-fast": "tsup src/index.ts --format cjs,esm",
+    "build": "tsup src/index.ts --format cjs,esm --dts-resolve --minify",
+    "test": "npx pnpm run build-fast && NODE_ENV=test uvu -r tsm",
+    "prepublishOnly": "npx pnpm run build-fast"
+  },
+  "license": "MIT",
+  "devDependencies": {
+    "@types/koa": "^2.13.4",
+    "@types/koa-conditional-get": "^2.0.0",
+    "@types/koa-etag": "^3.0.0",
+    "@types/koa-json": "^2.0.20",
+    "@types/koa-logger": "^3.1.2",
+    "@types/koa-response-time": "^2.1.1",
+    "@types/koa__cors": "^3.1.0",
+    "@types/mongodb": "^3.6.20",
+    "@types/node": "^16.11.13",
+    "koa-ctx-cache-control": "^1.0.1",
+    "prettier": "2.5.1",
+    "tsm": "^2.2.1",
+    "tsup": "5.11.1",
+    "typescript": "4.5.3",
+    "uvu": "0.5.2"
+  },
+  "dependencies": {
+    "@koa/cors": "^3.1.0",
+    "@koa/router": "^10.1.1",
+    "dotenv": "^10.0.0",
+    "envalid": "^7.2.2",
+    "koa": "^2.13.4",
+    "koa-body": "^4.2.0",
+    "koa-compose": "^4.1.0",
+    "koa-conditional-get": "^3.0.0",
+    "koa-etag": "^4.0.0",
+    "koa-json": "^2.0.2",
+    "koa-logger": "^3.2.1",
+    "koa-response-time": "^2.1.0",
+    "mongodb": "^3.7.3"
+  }
+}
