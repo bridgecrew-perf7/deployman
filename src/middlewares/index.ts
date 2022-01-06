@@ -1,3 +1,4 @@
+import config from '../config';
 import logger from 'koa-logger';
 import responseTime from 'koa-response-time';
 import body from 'koa-body';
@@ -6,7 +7,7 @@ import etag from 'koa-etag';
 import cors from '@koa/cors';
 import json from 'koa-json';
 import cacheContrl from 'koa-ctx-cache-control';
-import github from './github';
+import token from './token';
 
 export {
   logger,
@@ -17,11 +18,10 @@ export {
   cors,
   json,
   cacheContrl,
-  github,
+  token,
 };
 
-export default [
-  logger(),
+const middlewares = [
   responseTime({
     hrtime: true,
   }),
@@ -35,3 +35,9 @@ export default [
   cors(),
   json({ pretty: false, param: 'x-json-pretty' }),
 ];
+
+if (!config.WORKER_ENABLE) {
+  middlewares.push(logger());
+}
+
+export default middlewares;

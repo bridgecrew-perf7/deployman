@@ -2,12 +2,12 @@ import {
   Application,
   Context,
   Router,
-} from 'https://deno.land/x/oak@v10.0.0/mod.ts';
-import Logger from 'https://deno.land/x/oak_logger@1.0.0/mod.ts';
-import { oakCors } from 'https://deno.land/x/cors@v1.2.2/mod.ts';
+  Logger,
+  oakCors,
+  createHash,
+} from './deps.ts';
 import { handlers } from './handlers.ts';
-import { createHash } from 'https://deno.land/std@0.110.0/hash/mod.ts';
-import { github as secret } from '../key.ts';
+import { rpc as secret } from '../src/key.ts';
 
 const app = new Application();
 
@@ -17,18 +17,17 @@ app.use(Logger.responseTime);
 
 const router = new Router();
 
-router.use(
-  (() => {
-    const token = createHash('sha256').update(secret.value).toString('base64');
-    return async (ctx: Context, next: any) => {
-      if (ctx.request.headers.get(secret.name) === token) {
-        await next();
-      } else {
-        ctx.throw(500);
-      }
-    };
-  })(),
-);
+const tokenMiddleware = () => {
+  const token = createHash('sha256').update(secret.value).toString('base64');
+  return async (ctx: Context, next: any) => {
+    if (ctx.request.headers.get(secret.name) === token) {
+      await next();
+    } else {
+      ctx.throw(500);
+    }
+  };
+};
+router.use(tokenMiddleware());
 
 router.post('/rpc', async (ctx: Context) => {
   const body = ctx.request.body();

@@ -1,19 +1,35 @@
-import { Http } from './http';
-import { Context, withContext } from './http/context';
+import {
+  Http,
+  Context,
+  withContext,
+  connect,
+  MongoClient,
+  startup,
+} from './mod';
 import routes from './routes';
-import { connect, Db } from './mongo';
 import config from './config';
+import './startup';
 
 async function runApp() {
-  const ctx = Context();
+  let ctx = Context();
 
-  if (config.MONGO_ENABLE) {
-    ctx.db = (await connect(config.MONGO_URL)) as Db;
+  if (config.MONGO_URL) {
+    const mongoOpts: Record<string, any> = {};
+    if (config.NODE_ENV === 'production') mongoOpts.directConnection = false;
+    ctx.mongo = (await connect(config.MONGO_URL, mongoOpts)) as MongoClient;
   }
 
   const http = new Http(config.PORT);
   http.withRouter(routes);
-  http.start(withContext(ctx));
+
+  ctx = withContext({
+    ...ctx,
+    http,
+  });
+
+  await startup.run(ctx);
+
+  http.start(ctx);
 }
 
 if (!config.isTest && config.HTTP_ENABLE) {

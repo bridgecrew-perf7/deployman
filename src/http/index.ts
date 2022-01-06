@@ -3,14 +3,20 @@ import Router from '@koa/router';
 import { BaseContext } from '../types';
 import compose from 'koa-compose';
 import middlewares, { cacheContrl } from '../middlewares';
+import { uuidv4 } from '../utils/random';
+
+const HOST = '0.0.0.0';
+const PORT = 8080;
 
 export class Http {
   app: Koa;
 
+  hostname: string;
   port: number;
 
-  constructor(port = 8080) {
-    this.port = port;
+  constructor(port = PORT, hostname = HOST) {
+    this.port = Number(port || PORT);
+    this.hostname = hostname || HOST;
 
     this.app = new Koa();
 
@@ -37,8 +43,28 @@ export class Http {
       });
     });
 
-    this.app.listen(this.port, () => {
-      console.log(`Listening on http://localhost:${this.port}`);
+    this.app.context.json = function (data: any) {
+      this.type = 'json';
+      this.body = { ...data, requestId: uuidv4() };
+    };
+
+    this.app.context.success = function (data: any, message: string = 'ok') {
+      this.type = 'json';
+      this.body = { data, message, requestId: uuidv4() };
+    };
+
+    this.app.context.fail = function (error: any, code = 200) {
+      this.status = code;
+      let message = '';
+      if (typeof error === 'object') {
+        message = error.message;
+        error = error.error;
+      }
+      this.body = { error, message, requestId: uuidv4() };
+    };
+
+    this.app.listen(this.port, this.hostname, () => {
+      console.log(`Listening on http://${this.hostname}:${this.port}`);
     });
   }
 }

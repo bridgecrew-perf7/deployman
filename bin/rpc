@@ -1,2 +1,2 @@
 #!/usr/bin/env bash
-deno run --allow-net --allow-run ./src/rpc/index.ts
+deno run --allow-net --allow-run ./rpc/index.ts

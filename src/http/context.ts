@@ -4,8 +4,11 @@ export function withContext(obj: object = {}) {
   const ctx: BaseContext = {};
 
   Object.entries(obj).forEach(([key, value]) => {
-    if (key === 'db') {
-      ctx.collection = (name: string) => value.collection(name);
+    if (key === 'mongo') {
+      ctx.db = value.db();
+      ctx.collection = (name: string, dbName?: string) => {
+        return (dbName ? value.db(dbName) : value.db()).collection(name);
+      };
     }
     ctx[key] = value;
   });
@@ -13,6 +16,6 @@ export function withContext(obj: object = {}) {
   return ctx;
 }
 
-export function Context() {
-  return {} as BaseContext;
+export function Context(base: BaseContext = {}) {
+  return { ...base } as BaseContext;
 }

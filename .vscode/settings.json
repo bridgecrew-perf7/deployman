@@ -1,6 +1,6 @@
 {
   "editor.formatOnSave": true,
-  "deno.enable": true,
+  "deno.enable": false,
   "deno.suggest.imports.hosts": {
     "https://deno.land": true
   }
